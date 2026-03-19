@@ -62,8 +62,8 @@ def get_habits(
         timeGeneral=f"{time.time() - start:.4f}s"
     )
 
-@router.post("")
-def create_habit(body: HabitCreate, db: Session = Depends(get_db)):
+@router.post("/{idUser}")
+def create_habit(idUser: str, body: HabitCreate, db: Session = Depends(get_db)):
     start = time.time()
     habit = Habit(
         name=body.name,
@@ -73,12 +73,12 @@ def create_habit(body: HabitCreate, db: Session = Depends(get_db)):
     )
     db.add(habit)
     db.flush()
-    db.add(UserHabit(idUser=body.userId, idHabit=habit.id))
+    db.add(UserHabit(idUser=idUser, idHabit=habit.id))
     db.commit()
     db.refresh(habit)
     return Response[HabitOut](
         result=HabitOut(
-            id=habit.id, name=habit.name, description=habit.description,
+            id=idUser, name=habit.name, description=habit.description,
             tagId=habit.tagId, cost=habit.cost, finalValue=habit.finalValue
         ),
         timeGeneral=f"{time.time() - start:.4f}s"

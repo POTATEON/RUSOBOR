@@ -1,6 +1,6 @@
 "use client"
 
-import { Habit } from "@/entities/habit/types"
+import { habits } from "@/entities/habit/types"
 import { Button } from "@/shared/components/ui/button"
 import { cn } from "@/lib/utils"
 import { useUpdateStreackHabit } from "./model/use-update-streack-habit"
@@ -8,7 +8,7 @@ import { useResetStreackHabit } from "./model/use-reset-streack-habit"
 import { useEffect, useState } from "react"
 
 interface HabitCardProps {
-  habit: Habit
+  habit: habits
   onAddToPersonal?: (habitId: string) => void
   userId?: string
 }

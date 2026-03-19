@@ -21,17 +21,18 @@ import { useCreateHabit } from "./model/use-create-habit"
 const createHabitSchema = z.object({
   name: z.string().min(1, "Название обязательно"),
   description: z.string().min(1, "Описание обязательно"),
-  cost: z.number().min(0, "Стоимость должна быть неотрицательной"
-  ),
+  tagId: z.string().min(1, "ID тега обязательно"),
+  cost: z.number().min(0, "Стоимость должна быть неотрицательной"),
 })
 
 export type CreateHabitFormValues = z.infer<typeof createHabitSchema>
 
 type CreateHabitDialogProps = {
+  userId: string;
   onSubmit?: (values: CreateHabitFormValues) => void
 }
 
-export function CreateHabitDialog({ onSubmit }: CreateHabitDialogProps) {
+export function CreateHabitDialog({ userId, onSubmit }: CreateHabitDialogProps) {
   const [open, setOpen] = useState(false)
   const { createHabit, isPending } = useCreateHabit();
 
@@ -45,6 +46,7 @@ export function CreateHabitDialog({ onSubmit }: CreateHabitDialogProps) {
     defaultValues: {
       name: "",
       description: "",
+      tagId: "",
       cost: 0,
     },
   })
@@ -54,7 +56,9 @@ export function CreateHabitDialog({ onSubmit }: CreateHabitDialogProps) {
       await createHabit({
         name: data.name,
         description: data.description,
+        tagId: data.tagId,
         cost: data.cost,
+        userId,
       })
       reset()
       setOpen(false)
@@ -96,6 +100,17 @@ export function CreateHabitDialog({ onSubmit }: CreateHabitDialogProps) {
             />
             {errors.description && (
               <p className="text-xs text-red-500">{errors.description.message}</p>
+            )}
+          </div>
+
+          <div className="space-y-1">
+            <label className="block text-xs font-medium text-muted-foreground">ID тега</label>
+            <Input
+              {...register("tagId")}
+              placeholder="ID тега"
+            />
+            {errors.tagId && (
+              <p className="text-xs text-red-500">{errors.tagId.message}</p>
             )}
           </div>
 

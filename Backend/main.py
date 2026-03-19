@@ -14,13 +14,15 @@ app = FastAPI(title="РУСОБОР - собиратель привычек ру
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:3000",  # CRA / Next.js
+        "http://localhost:3000",
+        "http://localhost:3001",
+        "http://172.18.0.1:3000",
+        "http://172.18.0.1:3001"
     ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-app = FastAPI(title="РУСОБОР - собиратель привычек русских", version="1.0.0")
 
 app.include_router(habits.router,       prefix="/habits",       tags=["habits"])
 app.include_router(achievements.router, prefix="/achievements", tags=["achievements"])

@@ -9,7 +9,6 @@ class HabitCreate(BaseModel):
     description: str | None = None
     tagId:       str | None = None
     cost:        int = 0
-    userId:      str
 
 class HabitUpdate(BaseModel):
     name:        str | None = None

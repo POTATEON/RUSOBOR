@@ -15,7 +15,9 @@ export type MyPagimationPagination = {
 export type CreateHabitRequest = {
     name: string;
     description: string;
+    tagId: string;
     cost: number;
+    userId: string;
 }
 
 export type AddHabitPersonal = {
@@ -65,7 +67,7 @@ export const habitApi = {
     },
 
     postHabit: async (request : CreateHabitRequest): Promise<Envelope<number>> => {
-        const response = await apiClient.post<Envelope<number>>("/habits", request);
+        const response = await apiClient.post<Envelope<number>>(`/habits/${request.userId}`, request);
         return response.data;
     },
 

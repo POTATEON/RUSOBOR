@@ -40,7 +40,7 @@ export default function HabitPage() {
     <div className="container mx-auto p-6">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-bold">Каталог привычек</h1>
-        <CreateHabitDialog />
+        <CreateHabitDialog userId={userId} />
       </div>
 
       <p className="text-muted-foreground mb-8">
