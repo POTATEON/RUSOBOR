@@ -42,5 +42,5 @@ class UserAchievement(Base):
     __tablename__ = "userAchievement"
     idUser        = Column(String, ForeignKey("users.id"), primary_key=True)
     idAchievement = Column(String, ForeignKey("achievements.id"), primary_key=True)
-    progress      = Column(Integer, nullable=False, default=0) 
+    progress      = Column(Integer, nullable=False, default=0)  # ← добавь
     isCompleted   = Column(Boolean, nullable=False, default=False)
