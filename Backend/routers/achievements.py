@@ -1,11 +1,66 @@
 ﻿from fastapi import Depends, APIRouter, Query
-from schemas import AchievementWithStatusOut, Response, PaginatedAchievements, AchievementProgressUpdate
+from schemas import AchievementWithStatusOut, Response, PaginatedAchievements, AchievementProgressUpdate, AchievementCreate
 from sqlalchemy.orm import Session
 from database import get_db
 from models import Achievement, UserAchievement
 import time
 
 router = APIRouter()
+@router.get("/{idUser}")
+def get_achievements(
+    idUser:   str,
+    page:     int = Query(default=1, ge=1),
+    sizePage: int = Query(default=10, ge=1, le=100),
+    db: Session = Depends(get_db)
+):
+    start   = time.time()
+    query   = db.query(Achievement, UserAchievement).join(
+        UserAchievement, UserAchievement.idAchievement == Achievement.id
+    ).filter(UserAchievement.idUser == idUser)
+
+    total   = query.count()
+    results = query.offset((page - 1) * sizePage).limit(sizePage).all()
+
+    achievements = [
+        AchievementWithStatusOut(
+            id=a.id, name=a.name, description=a.description,
+            finalValue=a.finalValue, tagId=a.tagId,
+            progress=ua.progress,
+            isCompleted=ua.isCompleted
+        )
+        for a, ua in results
+    ]
+
+    return Response[PaginatedAchievements](
+        result=PaginatedAchievements(achievements=achievements, totalCount=total),
+        timeGeneral=f"{time.time() - start:.4f}s"
+    )
+
+@router.post("")
+def create_achievement(body: AchievementCreate, db: Session = Depends(get_db)):
+    start       = time.time()
+    achievement = Achievement(
+        name=body.name,
+        description=body.description,
+        finalValue=body.finalValue,
+        tagId=body.tagId
+    )
+    db.add(achievement)
+    db.flush()
+    db.add(UserAchievement(
+        idUser=body.userId,
+        idAchievement=achievement.id
+    ))
+    db.commit()
+    db.refresh(achievement)
+    return Response[AchievementOut](
+        result=AchievementOut(
+            id=achievement.id, name=achievement.name,
+            description=achievement.description, progress=0,
+            finalValue=achievement.finalValue, tagId=achievement.tagId
+        ),
+        timeGeneral=f"{time.time() - start:.4f}s"
+    )
 
 @router.get("/{idUser}")
 def get_achievements(
