@@ -19,6 +19,11 @@ export default function AppSidebar(){
                             </Link>
                         </SidebarMenuItem>
                         <SidebarMenuItem>
+                            <Link href={routs.myhabit}>
+                                <SidebarMenuButton>мои привычечки</SidebarMenuButton>
+                            </Link>
+                        </SidebarMenuItem>
+                        <SidebarMenuItem>
                             <Link href={routs.profile}>
                                 <SidebarMenuButton>Профиль</SidebarMenuButton>
                             </Link>

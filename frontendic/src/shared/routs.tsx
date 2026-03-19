@@ -3,5 +3,7 @@ export const routs = {
     habit: "/habit",
     profile: "/profile",
     settings: "/settings",
-    achievements: "/achievements"
+    achievements: "/achievements",
+    myhabit: "/my-habit"
+
 }

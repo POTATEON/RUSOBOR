@@ -45,18 +45,18 @@ const mockUserAchievements: Achievements[] = [
   },
 ]
 
-async function fetchUserAchievements(userId: number): Promise<Achievements[]> {
+async function fetchUserAchievements(userId: string): Promise<Achievements[]> {
   // Имитация задержки сети
   await new Promise((resolve) => setTimeout(resolve, 300))
   console.log(`Fetching achievements for user ${userId}`)
   return mockUserAchievements.map((ach) => ({
     ...ach,
     // Немного варьируем прогресс для демонстрации
-    progress: ach.id === userId ? ach.finalValue : ach.progress, // для userId=1 завершённая ачивка
+    progress: ach.id.toString() === userId ? ach.finalValue : ach.progress, // для userId=1 завершённая ачивка
   }))
 }
 
-export function useGetUserAchievements(userId: number) {
+export function useGetUserAchievements(userId: string) {
   const { data, isLoading, error } = useQuery({
     queryKey: ["userAchievements", userId],
     queryFn: () => fetchUserAchievements(userId),

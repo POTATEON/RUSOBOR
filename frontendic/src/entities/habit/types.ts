@@ -1,4 +1,4 @@
-export type Habit = {
+export type habits = {
     id: string;
     name: string;
     description: string;
@@ -10,6 +10,11 @@ export type Habit = {
 }
 
 export type HabitListPagination = {
-    habits: Habit[];
+    habits: habits[];
+    totalCount: number;
+}
+
+export type MyHabitListPagination = {
+    habits: habits[];
     totalCount: number;
 }

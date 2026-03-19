@@ -1,9 +1,15 @@
 import { apiClient } from "@/shared/api/api-axios";
-import { HabitListPagination } from "./types";
+import { HabitListPagination, MyHabitListPagination } from "./types";
 
 export type Pagination = {
     page: number,
     pageSize: number,
+}
+
+export type MyPagimationPagination = {
+    page: number,
+    pageSize: number,
+    userId: string;
 }
 
 export type CreateHabitRequest = {
@@ -39,6 +45,16 @@ export type Envelope<T> = {
 export const habitApi = {
     getHabits: async (request : Pagination): Promise<Envelope<HabitListPagination>> => {
         const response = await apiClient.get<Envelope<HabitListPagination>>("/habits", {
+            params: {
+                sizePage: request.pageSize,
+                page: request.page,
+            },
+        });
+
+        return response.data;
+    },
+    getMyHabits: async (request : MyPagimationPagination): Promise<Envelope<MyHabitListPagination>> => {
+        const response = await apiClient.get<Envelope<MyHabitListPagination>>(`/habits/${request.userId}`, {
             params: {
                 sizePage: request.pageSize,
                 page: request.page,

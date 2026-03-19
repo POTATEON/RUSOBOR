@@ -7,7 +7,7 @@ import { useUpdateCompleteAchievements } from "./model/use-ubdate-complete-achie
 
 interface AchievementCardProps {
   achievement: Achievements
-  userId: number
+  userId: string
 }
 
 export function AchievementCard({ achievement, userId }: AchievementCardProps) {
@@ -42,7 +42,7 @@ export function AchievementCard({ achievement, userId }: AchievementCardProps) {
       try {
         await updateProgressAchievements({
           achievementsId: id.toString(),
-          userId: userId.toString(),
+          userId: userId,
         })
         setMarkedComplete(true)
       } catch (error) {

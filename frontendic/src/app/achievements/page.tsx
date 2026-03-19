@@ -7,7 +7,7 @@ import { Skeleton } from "@/shared/components/ui/skeleton"
 import { Achievements } from "@/entities/achievements/types"
 
 export default function AchievementsPage() {
-  const userId = "1" // Заглушка, в реальном приложении брать из контекста
+  const userId = "string" // Заглушка, в реальном приложении брать из контекста
   const page = 1
   const pageSize = 100
 
@@ -55,7 +55,7 @@ export default function AchievementsPage() {
             <AchievementCard
               key={achievement.id}
               achievement={achievement}
-              userId={Number(userId)}
+              userId={userId}
             />
           ))}
         </div>
