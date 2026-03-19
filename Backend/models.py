@@ -22,6 +22,7 @@ class Habit(Base):
     tagId       = Column(String, ForeignKey("tags.tagId"))
     cost        = Column(Integer, nullable=False, default=0)
     finalValue  = Column(Integer, nullable=False, default=0)
+    goal_days   = Column(Integer, nullable=False, default=0)
 
 class UserHabit(Base):
     __tablename__ = "userHabit"

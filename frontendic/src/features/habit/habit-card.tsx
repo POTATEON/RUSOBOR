@@ -14,7 +14,7 @@ interface HabitCardProps {
 }
 
 export function HabitCard({ habit, onAddToPersonal, userId = "string" }: HabitCardProps) {
-  const { id, name, description, cost, tagName, streak, finalValue } = habit
+  const { id, name, description, cost, tagName, streak, finalValue, goal_days } = habit
 
   const { updateStreackHabit, isPending: isUpdating } = useUpdateStreackHabit()
   const { updateResetStreackHabit, isPending: isResetting } = useResetStreackHabit()
@@ -132,10 +132,10 @@ export function HabitCard({ habit, onAddToPersonal, userId = "string" }: HabitCa
 
   const theme = getCostTheme(cost)
 
-  // Прогресс достижения цели
-  const safeFinalValue = finalValue ?? 0
-  const progressPercent = safeFinalValue > 0 ? Math.min(100, (streak / safeFinalValue) * 100) : 0
-  const isGoalReached = streak >= safeFinalValue
+  // Прогресс достижения цели (используем goal_days, если задано, иначе finalValue)
+  const goalValue = goal_days > 0 ? goal_days : (finalValue ?? 0)
+  const progressPercent = goalValue > 0 ? Math.min(100, (streak / goalValue) * 100) : 0
+  const isGoalReached = streak >= goalValue
 
   // Определяем, доступна ли кнопка "отметиться"
   const twentyFourHours = 24 * 60 * 60 * 1000
@@ -172,7 +172,7 @@ export function HabitCard({ habit, onAddToPersonal, userId = "string" }: HabitCa
                 </div>
               )}
               <span className="text-xs font-medium px-2 py-1 rounded-full bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
-                Цель: {safeFinalValue} дней
+                Цель: {goalValue} дней
               </span>
               <span className="text-xs font-medium px-2 py-1 rounded-full bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">
                 Серия: {streak} 🔥
@@ -184,7 +184,7 @@ export function HabitCard({ habit, onAddToPersonal, userId = "string" }: HabitCa
               <div className="flex justify-between text-xs">
                 <span>Прогресс к цели</span>
                 <span>
-                  {streak} / {safeFinalValue} ({progressPercent.toFixed(0)}%)
+                  {streak} / {goalValue} ({progressPercent.toFixed(0)}%)
                 </span>
               </div>
               <div className="h-2 w-full bg-gray-300 dark:bg-gray-700 rounded-full overflow-hidden">

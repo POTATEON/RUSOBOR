@@ -17,6 +17,7 @@ export type CreateHabitRequest = {
     description: string;
     tagId: string;
     cost: number;
+    goal_days?: number;
     userId: string;
 }
 

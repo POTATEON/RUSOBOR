@@ -23,6 +23,7 @@ const createHabitSchema = z.object({
   description: z.string().min(1, "Описание обязательно"),
   tagId: z.string().min(1, "ID тега обязательно"),
   cost: z.number().min(0, "Стоимость должна быть неотрицательной"),
+  goal_days: z.number().min(0, "Цель в днях должна быть неотрицательной").default(0),
 })
 
 export type CreateHabitFormValues = z.infer<typeof createHabitSchema>
@@ -48,6 +49,7 @@ export function CreateHabitDialog({ userId, onSubmit }: CreateHabitDialogProps) 
       description: "",
       tagId: "",
       cost: 0,
+      goal_days: 0,
     },
   })
 
@@ -58,6 +60,7 @@ export function CreateHabitDialog({ userId, onSubmit }: CreateHabitDialogProps) 
         description: data.description,
         tagId: data.tagId,
         cost: data.cost,
+        goal_days: data.goal_days,
         userId,
       })
       reset()
@@ -126,6 +129,17 @@ export function CreateHabitDialog({ userId, onSubmit }: CreateHabitDialogProps) 
             )}
           </div>
           <DialogFooter>
+          <div className="space-y-1">
+            <label className="block text-xs font-medium text-muted-foreground">Цель (дни)</label>
+            <Input
+              {...register("goal_days", { valueAsNumber: true })}
+              placeholder="Цель в днях"
+              type="number"
+            />
+            {errors.goal_days && (
+              <p className="text-xs text-red-500">{errors.goal_days.message}</p>
+            )}
+          </div>
             <Button type="submit" variant="default" disabled={isPending}>
               {isPending ? "Создание..." : "Создать"}
             </Button>

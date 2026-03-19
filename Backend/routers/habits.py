@@ -24,6 +24,7 @@ def get_habits(
                 HabitWithStreakOut(
                     id=h.id, name=h.name, description=h.description,
                     tagId=h.tagId, cost=h.cost, finalValue=h.finalValue,
+                    goal_days=h.goal_days,
                     streak=0
                 )
                 for h in habits
@@ -52,6 +53,7 @@ def get_habits(
         HabitWithStreakOut(
             id=h.id, name=h.name, description=h.description,
             tagId=h.tagId, cost=h.cost, finalValue=h.finalValue,
+            goal_days=h.goal_days,
             streak=streak
         )
         for h, streak in results
@@ -69,7 +71,8 @@ def create_habit(idUser: str, body: HabitCreate, db: Session = Depends(get_db)):
         name=body.name,
         description=body.description,
         cost=body.cost,
-        tagId=body.tagId
+        tagId=body.tagId,
+        goal_days=body.goal_days
     )
     db.add(habit)
     db.flush()
@@ -78,8 +81,9 @@ def create_habit(idUser: str, body: HabitCreate, db: Session = Depends(get_db)):
     db.refresh(habit)
     return Response[HabitOut](
         result=HabitOut(
-            id=idUser, name=habit.name, description=habit.description,
-            tagId=habit.tagId, cost=habit.cost, finalValue=habit.finalValue
+            id=habit.id, name=habit.name, description=habit.description,
+            tagId=habit.tagId, cost=habit.cost, finalValue=habit.finalValue,
+            goal_days=habit.goal_days
         ),
         timeGeneral=f"{time.time() - start:.4f}s"
     )
@@ -99,12 +103,15 @@ def update_habit(idUser: str, idHabit: str, body: HabitUpdate, db: Session = Dep
         habit.name = body.name
     if body.description is not None:
         habit.description = body.description
+    if body.goal_days is not None:
+        habit.goal_days = body.goal_days
     db.commit()
     db.refresh(habit)
     return Response[HabitOut](
         result=HabitOut(
             id=habit.id, name=habit.name, description=habit.description,
-            tagId=habit.tagId, cost=habit.cost, finalValue=habit.finalValue
+            tagId=habit.tagId, cost=habit.cost, finalValue=habit.finalValue,
+            goal_days=habit.goal_days
         ),
         timeGeneral=f"{time.time() - start:.4f}s"
     )

@@ -13,7 +13,7 @@ interface MyHabitCardProps {
 }
 
 export function MyHabitCard({ habit, userId = "string" }: MyHabitCardProps) {
-  const { id, name, description, cost, tagName, streak, finalValue } = habit
+  const { id, name, description, cost, tagName, streak, finalValue, goal_days } = habit
 
   const { updateStreackHabit, isPending: isUpdating } = useUpdateStreackHabit()
   const { updateResetStreackHabit, isPending: isResetting } = useResetStreackHabit()
@@ -122,9 +122,9 @@ export function MyHabitCard({ habit, userId = "string" }: MyHabitCardProps) {
 
   const theme = getCostTheme(cost)
 
-  const safeFinalValue = finalValue ?? 0
-  const progressPercent = safeFinalValue > 0 ? Math.min(100, (streak / safeFinalValue) * 100) : 0
-  const isGoalReached = streak >= safeFinalValue
+  const goalValue = goal_days > 0 ? goal_days : (finalValue ?? 0)
+  const progressPercent = goalValue > 0 ? Math.min(100, (streak / goalValue) * 100) : 0
+  const isGoalReached = streak >= goalValue
 
   const twentyFourHours = 24 * 60 * 60 * 1000
   const canMark = !lastClickedAt || (Date.now() - lastClickedAt >= twentyFourHours)
@@ -166,7 +166,7 @@ export function MyHabitCard({ habit, userId = "string" }: MyHabitCardProps) {
             )}
             <div className="flex items-center gap-1">
               <span className="text-sm">🎯</span>
-              <span className="text-sm font-medium">Цель: {safeFinalValue} дней</span>
+              <span className="text-sm font-medium">Цель: {goalValue} дней</span>
             </div>
             <div className="flex items-center gap-1">
               <span className="text-sm">🔥</span>
@@ -187,7 +187,7 @@ export function MyHabitCard({ habit, userId = "string" }: MyHabitCardProps) {
             <div className="flex justify-between text-sm">
               <span>Прогресс к цели</span>
               <span className="font-semibold">
-                {streak} / {safeFinalValue} ({progressPercent.toFixed(0)}%)
+                {streak} / {goalValue} ({progressPercent.toFixed(0)}%)
               </span>
             </div>
             <div className="h-3 w-full bg-gray-300 dark:bg-gray-700 rounded-full overflow-hidden">

@@ -6,6 +6,7 @@ export type habits = {
     tagId: string;
     streak: number;
     finalValue?: number;
+    goal_days: number;
     tagName?: string[];
 }
 

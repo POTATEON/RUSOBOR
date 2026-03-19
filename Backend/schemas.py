@@ -9,10 +9,12 @@ class HabitCreate(BaseModel):
     description: str | None = None
     tagId:       str | None = None
     cost:        int = 0
+    goal_days:   int = 0
 
 class HabitUpdate(BaseModel):
     name:        str | None = None
     description: str | None = None
+    goal_days:   int | None = None
 
 class HabitOut(BaseModel):
     id:          str
@@ -21,6 +23,7 @@ class HabitOut(BaseModel):
     tagId:       str | None = None
     cost:        int
     finalValue:  int
+    goal_days:   int
     model_config = {"from_attributes": True}
 
 class HabitWithStreakOut(HabitOut):
