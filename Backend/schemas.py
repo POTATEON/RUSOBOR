@@ -9,7 +9,6 @@ class HabitCreate(BaseModel):
     description: str | None = None
     tagId:       str | None = None
     cost:        int = 0
-    userId:      str
 
 class HabitUpdate(BaseModel):
     name:        str | None = None
@@ -26,6 +25,9 @@ class HabitOut(BaseModel):
 
 class HabitWithStreakOut(HabitOut):
     streak: int
+
+class HabitAttach(BaseModel):
+    idHabit: str
 
 class PaginatedHabits(BaseModel):
     habits:     List[HabitWithStreakOut]
@@ -54,7 +56,21 @@ class AchievementProgressUpdate(BaseModel):
     idUser:        str
     idAchievement: str
     progress:      int
-    
+
+
+class AchievementCreate(BaseModel):
+    name:        str
+    description: str | None = None
+    finalValue:  int
+    tagId:       str | None = None
+
+class AchievementCreate(BaseModel):
+    name:        str
+    description: str | None = None
+    finalValue:  int | None = None
+    tagId:       str | None = None
+    userId:      str
+
 class AchievementWithStatusOut(BaseModel):
     id:          str
     name:        str

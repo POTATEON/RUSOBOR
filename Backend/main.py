@@ -20,7 +20,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-app = FastAPI(title="РУСОБОР - собиратель привычек русских", version="1.0.0")
 
 app.include_router(habits.router,       prefix="/habits",       tags=["habits"])
 app.include_router(achievements.router, prefix="/achievements", tags=["achievements"])
