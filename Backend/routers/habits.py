@@ -8,6 +8,31 @@ import time
 
 router = APIRouter()
 
+@router.get("")
+def get_habits(
+    page:     int = Query(default=1, ge=1),
+    sizePage: int = Query(default=10, ge=1, le=100),
+    db: Session = Depends(get_db)
+):
+    start   = time.time()
+    total   = db.query(Habit).count()
+    habits  = db.query(Habit).offset((page - 1) * sizePage).limit(sizePage).all()
+
+    return Response[PaginatedHabits](
+        result=PaginatedHabits(
+            habits=[
+                HabitWithStreakOut(
+                    id=h.id, name=h.name, description=h.description,
+                    tagId=h.tagId, cost=h.cost, finalValue=h.finalValue,
+                    streak=0
+                )
+                for h in habits
+            ],
+            totalCount=total
+        ),
+        timeGeneral=f"{time.time() - start:.4f}s"
+    )
+
 @router.get("/{idUser}")
 def get_habits(
     idUser:   str,
@@ -34,27 +59,6 @@ def get_habits(
 
     return Response[PaginatedHabits](
         result=PaginatedHabits(habits=habits, totalCount=total),
-        timeGeneral=f"{time.time() - start:.4f}s"
-    )
-
-@router.get("/{idUser}/{idHabit}")
-def get_habit(idUser: str, idHabit: str, db: Session = Depends(get_db)):
-    start = time.time()
-    result = db.query(Habit, UserHabit.streak).join(
-        UserHabit, UserHabit.idHabit == Habit.id
-    ).filter(
-        UserHabit.idUser == idUser,
-        Habit.id == idHabit
-    ).first()
-    if not result:
-        return Response(errorList=["Привычка не найдена"], timeGeneral=f"{time.time() - start:.4f}s")
-    h, streak = result
-    return Response[HabitWithStreakOut](
-        result=HabitWithStreakOut(
-            id=h.id, name=h.name, description=h.description,
-            tagId=h.tagId, cost=h.cost, finalValue=h.finalValue,
-            streak=streak
-        ),
         timeGeneral=f"{time.time() - start:.4f}s"
     )
 
