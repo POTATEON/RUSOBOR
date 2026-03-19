@@ -20,7 +20,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
+#whfebwuife
 app.include_router(habits.router,       prefix="/habits",       tags=["habits"])
 app.include_router(achievements.router, prefix="/achievements", tags=["achievements"])
 app.include_router(auth.router, prefix="/auth", tags=["auth"])
