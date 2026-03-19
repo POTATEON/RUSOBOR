@@ -50,6 +50,11 @@ class AchievementOut(BaseModel):
     tagId:       str | None = None
     model_config = {"from_attributes": True}
 
+class AchievementProgressUpdate(BaseModel):
+    idUser:        str
+    idAchievement: str
+    progress:      int
+    
 class AchievementWithStatusOut(BaseModel):
     id:          str
     name:        str
