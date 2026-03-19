@@ -1,6 +1,6 @@
 ﻿# routers/habits.py
 from fastapi import Depends, APIRouter, Query
-from schemas import HabitOut, HabitWithStreakOut, Response, HabitCreate, HabitUpdate, PaginatedHabits
+from schemas import HabitOut, HabitWithStreakOut, Response, HabitCreate, HabitUpdate, PaginatedHabits, HabitAttach
 from sqlalchemy.orm import Session
 from database import get_db
 from models import Habit, UserHabit
@@ -68,7 +68,7 @@ def get_habits(
 def create_habit(idUser: str, body: HabitCreate, db: Session = Depends(get_db)):
     start = time.time()
     habit = Habit(
-        name=body.name,
+        name=idUser,
         description=body.description,
         cost=body.cost,
         tagId=body.tagId,
@@ -154,3 +154,27 @@ def delete_habit(idUser: str, idHabit: str, db: Session = Depends(get_db)):
     db.delete(user_habit)
     db.commit()
     return Response(result={"deleted": idHabit}, timeGeneral=f"{time.time() - start:.4f}s")
+
+@router.post("/{idUser}/attach")
+def attach_habit(idUser: str, body: HabitAttach, db: Session = Depends(get_db)):
+    start = time.time()
+    
+    # проверяем что привычка существует
+    habit = db.query(Habit).filter(Habit.id == body.idHabit).first()
+    if not habit:
+        return Response(errorList=["Привычка не найдена"], timeGeneral=f"{time.time() - start:.4f}s")
+    
+    # проверяем что привязка ещё не существует
+    existing = db.query(UserHabit).filter(
+        UserHabit.idUser == idUser,
+        UserHabit.idHabit == body.idHabit
+    ).first()
+    if existing:
+        return Response(errorList=["Привычка уже привязана"], timeGeneral=f"{time.time() - start:.4f}s")
+
+    db.add(UserHabit(idUser=idUser, idHabit=body.idHabit))
+    db.commit()
+    return Response(
+        result={"attached": body.idHabit},
+        timeGeneral=f"{time.time() - start:.4f}s"
+    )
