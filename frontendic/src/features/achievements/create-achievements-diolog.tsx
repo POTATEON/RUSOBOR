@@ -22,6 +22,7 @@ const createAchievementsSchema = z.object({
   name: z.string().min(1, "Название обязательно"),
   description: z.string().min(1, "Описание обязательно"),
   finalValue: z.number().min(0, "Цель должна быть неотрицательной"),
+  tagId: z.string().min(1, "ID тега обязательно"),
 })
 
 export type CreateAchievementsFormValues = z.infer<typeof createAchievementsSchema>
@@ -45,7 +46,7 @@ export function CreateAchievementsDialog({ onSubmit }: CreateAchievementsDialogP
       name: "",
       description: "",
       finalValue: 0,
-
+      tagId: "",
     },
   })
 
@@ -54,8 +55,9 @@ export function CreateAchievementsDialog({ onSubmit }: CreateAchievementsDialogP
       await createAchievements({
         name: data.name,
         description: data.description,
-        finalValue: data.finalValue
-    })
+        finalValue: data.finalValue,
+        tagId: data.tagId,
+      })
       reset()
       setOpen(false)
     } catch (e) {
@@ -96,6 +98,17 @@ export function CreateAchievementsDialog({ onSubmit }: CreateAchievementsDialogP
             />
             {errors.description && (
               <p className="text-xs text-red-500">{errors.description.message}</p>
+            )}
+          </div>
+
+          <div className="space-y-1">
+            <label className="block text-xs font-medium text-muted-foreground">ID тега</label>
+            <Input
+              {...register("tagId")}
+              placeholder="ID тега"
+            />
+            {errors.tagId && (
+              <p className="text-xs text-red-500">{errors.tagId.message}</p>
             )}
           </div>
 

@@ -11,6 +11,7 @@ export type CreateAchievementsRequest = {
     name: string;
     description: string;
     finalValue: number;
+    tagId: string;
 }
 
 export type UbdateProgressAchievements = {

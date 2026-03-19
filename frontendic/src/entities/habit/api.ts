@@ -72,7 +72,7 @@ export const habitApi = {
     },
 
     putAddHabitPersonal: async (request : AddHabitPersonal): Promise<Envelope<number>> => {
-        const response = await apiClient.put<Envelope<number>>("/habits", request);
+        const response = await apiClient.put<Envelope<number>>(`/habits/${request.idUser}`, request);
         return response.data;
     },
 
