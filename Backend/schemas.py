@@ -1,16 +1,15 @@
+﻿# schemas.py
 from typing import List, Generic, Optional, TypeVar
-
 from pydantic import BaseModel
-
 
 T = TypeVar("T")
 
-
-class HabitCreate(BaseModel, Generic[T]):
+class HabitCreate(BaseModel):
     name:        str
     description: str | None = None
-    tagId:       int | None = None
+    tagId:       str | None = None
     cost:        int = 0
+    userId:      str
 
 class HabitUpdate(BaseModel):
     name:        str | None = None
@@ -20,16 +19,52 @@ class HabitOut(BaseModel):
     id:          str
     name:        str
     description: str | None = None
-    tagId:       int | None = None
-    streak:      int
+    tagId:       str | None = None
     cost:        int
+    finalValue:  int
     model_config = {"from_attributes": True}
 
+class HabitWithStreakOut(HabitOut):
+    streak: int
+
 class PaginatedHabits(BaseModel):
-    habits: List[HabitOut]
+    habits:     List[HabitWithStreakOut]
     totalCount: int
+
+class UserCreate(BaseModel):
+    id:       str
+    login:    str
+    password: str
+
+class UserOut(BaseModel):
+    id:    str
+    login: str
+    model_config = {"from_attributes": True}
+
+class AchievementOut(BaseModel):
+    id:          str
+    name:        str
+    description: str | None = None
+    progress:    int
+    finalValue:  int | None = None
+    tagId:       str | None = None
+    model_config = {"from_attributes": True}
+
+class AchievementWithStatusOut(BaseModel):
+    id:          str
+    name:        str
+    description: str | None = None
+    finalValue:  int | None = None
+    tagId:       str | None = None
+    progress:    int    
+    isCompleted: bool
+    model_config = {"from_attributes": True}
+
+class PaginatedAchievements(BaseModel):
+    achievements: list[AchievementWithStatusOut]
+    totalCount:   int
 
 class Response(BaseModel, Generic[T]):
     result:      Optional[T] = None
-    errorList:   Optional[List[str]] = None  # добавь = None
+    errorList:   Optional[List[str]] = None
     timeGeneral: str
