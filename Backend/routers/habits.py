@@ -68,7 +68,7 @@ def get_habits(
 def create_habit(idUser: str, body: HabitCreate, db: Session = Depends(get_db)):
     start = time.time()
     habit = Habit(
-        name=idUser,
+        name=body.name,
         description=body.description,
         cost=body.cost,
         tagId=body.tagId,

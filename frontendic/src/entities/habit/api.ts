@@ -29,7 +29,6 @@ export type AddHabitPersonal = {
 export type UpdateHabitStreak = {
     idHabit: string;
     idUser: string;
-    streak: number;
 }
 
 export type ResetStreackHabit = {
@@ -72,18 +71,18 @@ export const habitApi = {
         return response.data;
     },
 
-    putAddHabitPersonal: async (request : AddHabitPersonal): Promise<Envelope<number>> => {
-        const response = await apiClient.put<Envelope<number>>(`/habits/${request.idUser}`, request);
+    postAddHabitPersonal: async (request : AddHabitPersonal): Promise<Envelope<{ attached: string }>> => {
+        const response = await apiClient.post<Envelope<{ attached: string }>>(`/habits/${request.idUser}/attach`, { idHabit: request.idHabit });
         return response.data;
     },
 
-    putUpdateStreackHabit: async (request : UpdateHabitStreak): Promise<Envelope<number>> => {
-        const response = await apiClient.put<Envelope<number>>("/habits/streack", request);
+    putUpdateStreackHabit: async (request : UpdateHabitStreak): Promise<Envelope<string>> => {
+        const response = await apiClient.put<Envelope<string>>(`/habits/${request.idUser}/${request.idHabit}/streak/add`, {});
         return response.data;
     },
 
-    putResetStreackHabit: async (request : ResetStreackHabit): Promise<Envelope<number>> => {
-        const response = await apiClient.put<Envelope<number>>("/habits/streack", request);
+    putResetStreackHabit: async (request : ResetStreackHabit): Promise<Envelope<{streak: number}>> => {
+        const response = await apiClient.put<Envelope<{streak: number}>>(`/habits/${request.idUser}/${request.idHabit}/streak/reset`, {});
         return response.data;
     }
 }

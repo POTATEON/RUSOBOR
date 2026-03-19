@@ -24,18 +24,8 @@ export default function AppSidebar(){
                             </Link>
                         </SidebarMenuItem>
                         <SidebarMenuItem>
-                            <Link href={routs.profile}>
-                                <SidebarMenuButton>Профиль</SidebarMenuButton>
-                            </Link>
-                        </SidebarMenuItem>
-                        <SidebarMenuItem>
                             <Link href={routs.achievements}>
                                 <SidebarMenuButton>Достижения</SidebarMenuButton>
-                            </Link>
-                        </SidebarMenuItem>
-                        <SidebarMenuItem>
-                            <Link href={routs.settings}>
-                                <SidebarMenuButton>Настройки</SidebarMenuButton>
                             </Link>
                         </SidebarMenuItem>
                     </SidebarMenu>

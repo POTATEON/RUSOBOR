@@ -1,13 +1,16 @@
-export type Achievements = {
-    id: number;
+export type Achievement = {
+    id: string;
     name: string;
     description: string;
     finalValue: number;
     progress: number;
-    isComplete: boolean;
+    isCompleted: boolean;
 }
 
-export type AchievementsPagination = {
-    habits: Achievements[];
+// Для обратной совместимости (можно удалить позже)
+export type Achievements = Achievement;
+
+export type PaginatedAchievements = {
+    achievements: Achievement[];
     totalCount: number;
 }

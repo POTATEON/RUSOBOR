@@ -12,7 +12,7 @@ const PAGE_SIZE = 10
 
 export default function MyHabitPage() {
   const [page, setPage] = useState(1)
-  const userId = "string" // Заглушка, в реальном приложении брать из контекста
+  const userId = "string"
 
   const { data, isLoading, error } = useGetMyHabitList({ page, pageSize: PAGE_SIZE, userId })
 

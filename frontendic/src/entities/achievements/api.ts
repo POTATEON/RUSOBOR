@@ -1,5 +1,5 @@
 import { apiClient } from "@/shared/api/api-axios";
-import { Achievements } from "./types";
+import { Achievement, PaginatedAchievements } from "./types";
 
 export type PaginationAchievements = {
     page: number,
@@ -12,12 +12,13 @@ export type CreateAchievementsRequest = {
     description: string;
     finalValue: number;
     tagId: string;
+    userId: string;
 }
 
 export type UbdateProgressAchievements = {
-    achievementsId: number;
-    valueProgress: number;
-    userId: string;
+    idUser: string;
+    idAchievement: string;
+    progress: number;
 }
 
 export type UbdateCompleteAchievements = {
@@ -34,12 +35,11 @@ export type Envelope<T> = {
 
 
 export const achievementsApi = {
-    getAchievements: async (request : PaginationAchievements): Promise<Envelope<Achievements>> => {
-        const response = await apiClient.get<Envelope<Achievements>>("/Achievements", {
+    getAchievements: async (request : PaginationAchievements): Promise<Envelope<PaginatedAchievements>> => {
+        const response = await apiClient.get<Envelope<PaginatedAchievements>>(`/achievements/${request.userId}`, {
             params: {
-                PageSize: request.pageSize,
-                Page: request.page,
-                UserId: request.userId,
+                page: request.page,
+                sizePage: request.pageSize,
             },
         });
 
@@ -47,16 +47,16 @@ export const achievementsApi = {
     },
 
     postAchievements: async (request : CreateAchievementsRequest): Promise<Envelope<string>> => {
-        const response = await apiClient.post<Envelope<string>>("/Achievements", request);
+        const response = await apiClient.post<Envelope<string>>("/achievements", request);
         return response.data;
     },
 
     putUbdateProgressAchievements: async (request : UbdateProgressAchievements): Promise<Envelope<string>> => {
-        const response = await apiClient.put<Envelope<string>>("/Achievements", request);
+        const response = await apiClient.put<Envelope<string>>("/achievements/progress", request);
         return response.data;
     },
     putUbdateCompleteAchievements: async (request : UbdateCompleteAchievements): Promise<Envelope<string>> => {
-        const response = await apiClient.put<Envelope<string>>("/Achievements", request);
+        const response = await apiClient.put<Envelope<string>>(`/achievements/${request.userId}/${request.achievementsId}/complete`);
         return response.data;
     }
 }

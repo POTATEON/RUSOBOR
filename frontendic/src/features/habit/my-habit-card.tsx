@@ -5,6 +5,8 @@ import { Button } from "@/shared/components/ui/button"
 import { cn } from "@/lib/utils"
 import { useUpdateStreackHabit } from "./model/use-update-streack-habit"
 import { useResetStreackHabit } from "./model/use-reset-streack-habit"
+import { useUpdateProgressAchievements } from "@/features/achievements/model/use-update-progress-achievements"
+import { useGetAchievementsList } from "@/features/achievements/model/use-get-achievements-list"
 import { useEffect, useState } from "react"
 
 interface MyHabitCardProps {
@@ -17,6 +19,12 @@ export function MyHabitCard({ habit, userId = "string" }: MyHabitCardProps) {
 
   const { updateStreackHabit, isPending: isUpdating } = useUpdateStreackHabit()
   const { updateResetStreackHabit, isPending: isResetting } = useResetStreackHabit()
+  const { updateProgressAchievements } = useUpdateProgressAchievements()
+  const { data: achievementsData } = useGetAchievementsList({
+    page: 1,
+    pageSize: 100,
+    userId,
+  })
 
   const [lastClickedAt, setLastClickedAt] = useState<number | null>(null)
   const [showAlreadyMarked, setShowAlreadyMarked] = useState(false)
@@ -73,7 +81,7 @@ export function MyHabitCard({ habit, userId = "string" }: MyHabitCardProps) {
     }
 
     try {
-      await updateStreackHabit({ idHabit: id, idUser: userId, streak: streak + 1 })
+      await updateStreackHabit({ idHabit: id, idUser: userId })
       localStorage.setItem(`habit_${id}_lastClicked`, now.toString())
       setLastClickedAt(now)
       if (resetTimerId) clearTimeout(resetTimerId)
@@ -81,6 +89,32 @@ export function MyHabitCard({ habit, userId = "string" }: MyHabitCardProps) {
         handleAutoReset()
       }, twentyFourHours)
       setResetTimerId(timer)
+
+      // Проверяем, достигнута ли цель по стрику после увеличения
+      const newStreak = streak + 1
+      const goalValue = goal_days > 0 ? goal_days : (finalValue ?? 0)
+      if (newStreak >= goalValue && goalValue > 0) {
+        // Получаем ачивки пользователя
+        const achievements = achievementsData?.result?.achievements || []
+        // Фильтруем ачивки, где имя или описание содержит название привычки
+        const matchedAchievements = achievements.filter(ach =>
+          ach.name.toLowerCase().includes(name.toLowerCase()) ||
+          (ach.description && ach.description.toLowerCase().includes(name.toLowerCase()))
+        )
+        // Для каждой подходящей ачивки увеличиваем прогресс на cost
+        for (const ach of matchedAchievements) {
+          const newProgress = ach.progress + cost
+          try {
+            await updateProgressAchievements({
+              idUser: userId,
+              idAchievement: ach.id,
+              progress: newProgress,
+            })
+          } catch (err) {
+            console.error(`Ошибка при обновлении прогресса ачивки ${ach.id}:`, err)
+          }
+        }
+      }
     } catch (error) {
       console.error("Ошибка при отметке привычки:", error)
     }
@@ -140,13 +174,13 @@ export function MyHabitCard({ habit, userId = "string" }: MyHabitCardProps) {
     >
       <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
         <div className="space-y-3 flex-1">
-          <div className="flex items-center gap-2">
-            <h3 className="font-bold text-xl">{name}</h3>
+          <div className="flex items-center gap-2 mb-2">
+            <h3 className="font-bold text-2xl">{name}</h3>
             <span className={cn("text-xs font-semibold px-3 py-1 rounded-full", theme.badge)}>
               Ценность: {cost}
             </span>
           </div>
-          <p className="text-sm opacity-90">{description}</p>
+          <p className="text-base text-center opacity-90 mb-4">{description}</p>
 
           <div className="flex flex-wrap items-center gap-3 mt-4">
             {tagName && tagName.length > 0 && (
@@ -219,14 +253,6 @@ export function MyHabitCard({ habit, userId = "string" }: MyHabitCardProps) {
             className={cn("min-w-32", !canMark && "bg-gray-300 text-gray-600")}
           >
             {canMark ? "✅ Отметиться сегодня" : "⏳ Уже отмечено"}
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => updateResetStreackHabit({ idHabit: id, idUser: userId })}
-            disabled={isResetting}
-          >
-            🔄 Сбросить серию
           </Button>
         </div>
       </div>

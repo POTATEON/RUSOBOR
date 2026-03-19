@@ -2,7 +2,7 @@
 
 import { Achievements } from "@/entities/achievements/types"
 import { cn } from "@/lib/utils"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useUpdateCompleteAchievements } from "./model/use-ubdate-complete-achievements"
 
 interface AchievementCardProps {
@@ -11,34 +11,57 @@ interface AchievementCardProps {
 }
 
 export function AchievementCard({ achievement, userId }: AchievementCardProps) {
-  const { id, name, description, finalValue, progress, isComplete } = achievement
+  const { id, name, description, finalValue, progress, isCompleted } = achievement
   const percentage = finalValue > 0 ? Math.min(100, (progress / finalValue) * 100) : 0
-  const isCompleted = percentage >= 100
+  const isFullyCompleted = percentage >= 100
 
   const [showCelebration, setShowCelebration] = useState(false)
   const [audioPlayed, setAudioPlayed] = useState(false)
-  const [markedComplete, setMarkedComplete] = useState(isComplete)
-  const [hasCelebrated, setHasCelebrated] = useState(false)
+  const [markedComplete, setMarkedComplete] = useState(isCompleted)
+  const [hasCelebrated, setHasCelebrated] = useState(() => {
+    // Проверяем localStorage, праздновали ли уже эту ачивку
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem(`celebrated_${id}`)
+      return saved === 'true'
+    }
+    return false
+  })
+
+  const audioRef = useRef<HTMLAudioElement | null>(null)
 
   const { updateProgressAchievements, isPending } = useUpdateCompleteAchievements()
 
   // Эффект для триггера праздника при завершении
   useEffect(() => {
-    if (isCompleted && !showCelebration && !markedComplete && !hasCelebrated) {
+    if (isFullyCompleted && !hasCelebrated && !showCelebration) {
       setShowCelebration(true)
       setHasCelebrated(true)
+      localStorage.setItem(`celebrated_${id}`, 'true')
       // Воспроизведение звука
-      const audio = new Audio("/nad.mp3")
+      const audio = new Audio("/iii.mp3")
       audio.volume = 0.3
+      audioRef.current = audio
       audio.play().catch((e) => console.log("Аудио не удалось воспроизвести:", e))
       setAudioPlayed(true)
-    }
-  }, [isCompleted, showCelebration, markedComplete, hasCelebrated])
 
-  // Закрытие праздника по клику и отправка запроса
+      // Остановка музыки при завершении воспроизведения
+      audio.onended = () => {
+        audioRef.current = null
+      }
+    }
+  }, [isFullyCompleted, hasCelebrated, showCelebration, id])
+
+  // Закрытие праздника по клику и отправка запроса (если ачивка ещё не отмечена как выполненная)
   const handleCloseCelebration = async () => {
     setShowCelebration(false)
-    if (!markedComplete) {
+    // Остановить музыку, если она играет
+    if (audioRef.current) {
+      audioRef.current.pause()
+      audioRef.current.currentTime = 0
+      audioRef.current = null
+    }
+    // Если ачивка уже завершена на бэкенде (isCompleted = true), то запрос не нужен
+    if (!isCompleted) {
       try {
         await updateProgressAchievements({
           achievementsId: id.toString(),
@@ -49,7 +72,11 @@ export function AchievementCard({ achievement, userId }: AchievementCardProps) {
         console.error("Ошибка при отметке ачивки:", error)
         // Если ошибка, оставляем markedComplete false, но праздник больше не показываем
         setHasCelebrated(true)
+        localStorage.setItem(`celebrated_${id}`, 'true')
       }
+    } else {
+      // Если isCompleted уже true, просто обновляем markedComplete для отображения
+      setMarkedComplete(true)
     }
   }
 
@@ -118,7 +145,7 @@ export function AchievementCard({ achievement, userId }: AchievementCardProps) {
                 />
               </div>
             </div>
-            {isCompleted && !markedComplete && (
+            {isFullyCompleted && !isCompleted && (
               <div className="mt-2 text-xs font-medium px-2 py-1 rounded-full bg-green-200 text-green-900 dark:bg-green-900 dark:text-green-200 inline-block">
                 🎉 Завершено! Нажмите на карточку для отметки
               </div>

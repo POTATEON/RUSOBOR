@@ -28,10 +28,11 @@ const createAchievementsSchema = z.object({
 export type CreateAchievementsFormValues = z.infer<typeof createAchievementsSchema>
 
 type CreateAchievementsDialogProps = {
+  userId: string
   onSubmit?: (values: CreateAchievementsFormValues) => void
 }
 
-export function CreateAchievementsDialog({ onSubmit }: CreateAchievementsDialogProps) {
+export function CreateAchievementsDialog({ userId, onSubmit }: CreateAchievementsDialogProps) {
   const [open, setOpen] = useState(false)
   const { createAchievements, isPending } = useCreateAchievements();
 
@@ -57,6 +58,7 @@ export function CreateAchievementsDialog({ onSubmit }: CreateAchievementsDialogP
         description: data.description,
         finalValue: data.finalValue,
         tagId: data.tagId,
+        userId,
       })
       reset()
       setOpen(false)

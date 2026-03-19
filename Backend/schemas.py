@@ -66,12 +66,6 @@ class AchievementCreate(BaseModel):
     description: str | None = None
     finalValue:  int
     tagId:       str | None = None
-
-class AchievementCreate(BaseModel):
-    name:        str
-    description: str | None = None
-    finalValue:  int | None = None
-    tagId:       str | None = None
     userId:      str
 
 class AchievementWithStatusOut(BaseModel):
