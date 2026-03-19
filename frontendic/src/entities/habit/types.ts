@@ -1,11 +1,12 @@
 export type Habit = {
-    id: number;
+    id: string;
     name: string;
     description: string;
     cost: number;
-    tagName: string[];
+    tagId: string;
     streak: number;
-    finalValue: number;
+    finalValue?: number;
+    tagName?: string[];
 }
 
 export type HabitListPagination = {

@@ -5,7 +5,7 @@ import { toast } from "sonner"
 
 export function useAddHabitPersonal() {
   const mutation = useMutation({
-    mutationFn: ({ idHabit, idUser }: { idHabit: number; idUser: number }) =>
+    mutationFn: ({ idHabit, idUser }: { idHabit: string; idUser: string }) =>
       habitApi.putAddHabitPersonal({ idHabit, idUser }),
     onSettled: () => queryClient.invalidateQueries({ queryKey: ["habits"] }),
     onError: () => {

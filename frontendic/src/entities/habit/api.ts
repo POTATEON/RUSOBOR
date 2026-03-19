@@ -13,25 +13,25 @@ export type CreateHabitRequest = {
 }
 
 export type AddHabitPersonal = {
-    idHabit: number;
-    idUser: number;
+    idHabit: string;
+    idUser: string;
 }
 
 export type UpdateHabitStreak = {
-    idHabit: number;
-    idUser: number;
+    idHabit: string;
+    idUser: string;
     streak: number;
 }
 
 export type ResetStreackHabit = {
-    idHabit: number;
-    idUser: number;
+    idHabit: string;
+    idUser: string;
 }
 
 
 export type Envelope<T> = {
     result: T;
-    errorList: boolean;
+    errorList: string[] | null;
     timeGeneral: string;
 }
 
@@ -40,8 +40,8 @@ export const habitApi = {
     getHabits: async (request : Pagination): Promise<Envelope<HabitListPagination>> => {
         const response = await apiClient.get<Envelope<HabitListPagination>>("/habits", {
             params: {
-                PageSize: request.pageSize,
-                Page: request.page,
+                sizePage: request.pageSize,
+                page: request.page,
             },
         });
 
